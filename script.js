@@ -22,7 +22,18 @@
   const timelineYear = document.getElementById("timelineYear");
   const scrollGuide = document.getElementById("scrollGuide");
   const stageItems = Array.from(document.querySelectorAll(".stage-item"));
-  const beats = Array.from(document.querySelectorAll(".beat"));
+  const beats = Array.from(document.querySelectorAll(".beat")).map(beat => {
+    return {
+      el: beat,
+      start: parseFloat(beat.dataset.start),
+      end: parseFloat(beat.dataset.end),
+      kicker: beat.querySelector(".beat-kicker"),
+      lines: Array.from(beat.querySelectorAll(".beat-title .line")),
+      text: beat.querySelector(".beat-text"),
+      emphasis: beat.querySelector(".title-emphasis"),
+      lastLocalP: -1
+    };
+  });
   const replayBtn = document.getElementById("replayBtn");
   const discoveryLayer = document.getElementById("discoveryLayer");
 
@@ -32,9 +43,9 @@
   const discoveryData = [
     { start: 0.08, end: 0.18, x: 25, y: 55, title: '숲의 시작', desc: '비어 있던 산에 작은 묘목이<br>자리 잡기 시작합니다.' },
     { start: 0.22, end: 0.32, x: 65, y: 45, title: '어린 묘목', desc: '작은 나무들이 자라며<br>새로운 숲을 만들어갑니다.' },
-    { start: 0.35, end: 0.45, x: 40, y: 75, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
+    { start: 0.26, end: 0.36, x: 52, y: 68, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
     { start: 0.65, end: 0.75, x: 35, y: 40, title: '성장한 나무', desc: '나무가 높아지고 수관이 넓어지며<br>숲이 연결됩니다.' },
-    { start: 0.82, end: 0.92, x: 50, y: 35, title: '숲의 완성', desc: '성장한 나무들이 하나의<br>울창한 숲을 이룹니다.' }
+    { start: 0.82, end: 0.94, x: 50, y: 35, title: '숲의 완성', desc: '성장한 나무들이 하나의<br>울창한 숲을 이룹니다.' }
   ];
   let discoveryPoints = [];
 
@@ -88,6 +99,11 @@
       id: 'bird-2', start: 0.60, end: 0.76,
       startX: 85, startY: 45, endX: 20, endY: 15,
       scale: 0.8, baseRotate: -10
+    },
+    {
+      id: 'bird-ending', start: 0.96, end: 0.99,
+      startX: 15, startY: 60, endX: 85, endY: 40,
+      scale: 0.9, baseRotate: 5
     }
   ];
   let birds = [];
@@ -110,6 +126,40 @@
     });
   }
   initEcologyLayer();
+
+  /* ---------------------------------------------------
+     FOREST MINIMAP & DRONE VIEW DATA
+  --------------------------------------------------- */
+  const minimapDrone = document.getElementById("minimapDrone");
+  const minimapHitAreas = document.getElementById("minimapHitAreas");
+  const droneViewStatus = document.getElementById("droneViewStatus");
+  
+  const mapNodes = [
+    { p: 0.08, x: 10, y: 20, text: "01 / BARE LAND" },
+    { p: 0.29, x: 40, y: 10, text: "02 / PLANTING" },
+    { p: 0.51, x: 80, y: 40, text: "03 / YOUNG FOREST" },
+    { p: 0.73, x: 90, y: 80, text: "04 / GROWTH" },
+    { p: 0.93, x: 50, y: 90, text: "05 / MATURE FOREST" }
+  ];
+
+  function initMinimap() {
+    if (!minimapHitAreas) return;
+    mapNodes.forEach(node => {
+      const hit = document.createElement("div");
+      hit.className = "minimap-hit";
+      hit.style.left = node.x + "%";
+      hit.style.top = node.y + "%";
+      hit.addEventListener("click", () => {
+        // Find corresponding scroll position
+        const rect = scrubber.getBoundingClientRect();
+        const total = rect.height - window.innerHeight;
+        const targetScroll = (node.p * total) + window.scrollY + rect.top;
+        window.scrollTo({ top: targetScroll, behavior: "smooth" });
+      });
+      minimapHitAreas.appendChild(hit);
+    });
+  }
+  initMinimap();
 
   /* ---------------------------------------------------
      Preload frames
@@ -194,10 +244,49 @@
 
   function updateBeats(progress) {
     beats.forEach((beat) => {
-      const start = parseFloat(beat.dataset.start);
-      const end = parseFloat(beat.dataset.end);
-      const isActive = progress >= start && progress <= end;
-      beat.classList.toggle("is-active", isActive);
+      const { start, end, kicker, lines, text, emphasis } = beat;
+      
+      let localP = 0;
+      if (progress >= start && progress <= end) {
+        localP = (progress - start) / (end - start);
+      }
+      
+      if (localP === 0 && beat.lastLocalP === 0) return;
+      beat.lastLocalP = localP;
+
+      const mapRange = (val, inMin, inMax) => Math.max(0, Math.min(1, (val - inMin) / (inMax - inMin)));
+
+      // Kicker: entrance 0.00-0.08, exit 0.92-1.00
+      const pKicker = mapRange(localP, 0.00, 0.08) - mapRange(localP, 0.92, 1.00);
+      
+      // Line 1: entrance 0.04-0.12, exit 0.88-0.96
+      const pLine1 = mapRange(localP, 0.04, 0.12) - mapRange(localP, 0.88, 0.96);
+      
+      // Line 2: entrance 0.08-0.16, exit 0.84-0.92
+      const pLine2 = mapRange(localP, 0.08, 0.16) - mapRange(localP, 0.84, 0.92);
+      
+      // Text: entrance 0.12-0.20, exit 0.80-0.88
+      const pText = mapRange(localP, 0.12, 0.20) - mapRange(localP, 0.80, 0.88);
+
+      if (kicker) {
+        kicker.style.opacity = pKicker;
+        kicker.style.transform = `translateY(${(1 - pKicker) * 8}px)`;
+      }
+      if (lines[0]) {
+        lines[0].style.opacity = pLine1;
+        lines[0].style.transform = `translateY(${(1 - pLine1) * 8}px)`;
+      }
+      if (lines[1]) {
+        lines[1].style.opacity = pLine2;
+        lines[1].style.transform = `translateY(${(1 - pLine2) * 8}px)`;
+      }
+      if (text) {
+        text.style.opacity = pText;
+        text.style.transform = `translateY(${(1 - pText) * 8}px)`;
+      }
+      if (emphasis) {
+        emphasis.classList.toggle('is-highlighted', pLine2 > 0.8);
+      }
     });
   }
 
@@ -221,6 +310,46 @@
       timelineFill.style.width = "1px";
       timelineIndicator.style.top = pct;
       timelineIndicator.style.left = "5.5px";
+    }
+    
+    // Update Drone View & Minimap
+    if (minimapDrone && droneViewStatus) {
+      let currentStage = mapNodes[0];
+      let nextStage = mapNodes[0];
+      let localPct = 0;
+      
+      for (let i = 0; i < mapNodes.length - 1; i++) {
+        if (progress >= mapNodes[i].p && progress <= mapNodes[i+1].p) {
+          currentStage = mapNodes[i];
+          nextStage = mapNodes[i+1];
+          localPct = (progress - mapNodes[i].p) / (mapNodes[i+1].p - mapNodes[i].p);
+          break;
+        } else if (progress < mapNodes[0].p) {
+          currentStage = mapNodes[0];
+          nextStage = mapNodes[0];
+          localPct = 0;
+        } else if (progress > mapNodes[mapNodes.length-1].p) {
+          currentStage = mapNodes[mapNodes.length-1];
+          nextStage = mapNodes[mapNodes.length-1];
+          localPct = 1;
+        }
+      }
+      
+      const x = currentStage.x + (nextStage.x - currentStage.x) * localPct;
+      const y = currentStage.y + (nextStage.y - currentStage.y) * localPct;
+      minimapDrone.style.transform = `translate(-50%, -50%)`;
+      minimapDrone.style.left = x + "px";
+      minimapDrone.style.top = (24 + y) + "px";
+      
+      // Update Drone View text
+      const activeNode = mapNodes.slice().reverse().find(n => progress >= n.p - 0.05) || mapNodes[0];
+      if (droneViewStatus.textContent !== activeNode.text) {
+        droneViewStatus.style.opacity = 0;
+        setTimeout(() => {
+          droneViewStatus.textContent = activeNode.text;
+          droneViewStatus.style.opacity = 1;
+        }, 150);
+      }
     }
     
     const MAX_YEARS = 50;
@@ -312,6 +441,63 @@
       bird.el.style.opacity = opacity;
       bird.el.style.transform = `translate3d(${currentX}vw, calc(${currentY}vh + ${bounce}px), 0) scale(${scale}) rotate(${baseRotate + bounce*0.5}deg)`;
     });
+
+    // -------------------------------------------------
+    // FOREST COMPLETION ENDING UI FADE
+    // -------------------------------------------------
+    const forestMinimap = document.getElementById("forestMinimap");
+    const droneView = document.getElementById("droneView");
+    const forestTimeline = document.querySelector(".forest-timeline");
+    const forestRestored = document.getElementById("forestRestored");
+    
+    // Fade out UI between 0.94 and 0.97
+    let uiOpacity = 1;
+    if (progress > 0.94) {
+      uiOpacity = Math.max(0, 1 - (progress - 0.94) / 0.03);
+    }
+    if (forestMinimap) forestMinimap.style.opacity = uiOpacity;
+    if (droneView) droneView.style.opacity = uiOpacity;
+    if (forestTimeline) forestTimeline.style.opacity = uiOpacity;
+
+    // FOREST RESTORED: 0.985 ~ 0.995 (fade in and out)
+    if (forestRestored) {
+      let restoredOpacity = 0;
+      let restoredY = 10;
+      if (progress > 0.985 && progress < 0.995) {
+        if (progress <= 0.99) {
+          const p = (progress - 0.985) / 0.005;
+          restoredOpacity = p;
+          restoredY = 10 * (1 - p);
+        } else {
+          const p = (0.995 - progress) / 0.005;
+          restoredOpacity = p;
+          restoredY = 10 * (1 - p); // Goes back down slightly or stays up. Let's just keep Y mostly driven by entrance or steady.
+          // Actually, if it goes back down it looks like it sinks. 
+          // Let's just make Y float up and opacity fade.
+        }
+      }
+      // Movie credits style: start from bottom, move up continuously off screen
+      // Narrative fully disappears by 0.93. The credit starts rising right after.
+      if (progress >= 0.93 && progress <= 1.0) {
+        const fullP = (progress - 0.93) / 0.07; // 0 to 1
+        
+        // Starts at +10vh (below screen center), goes to -100vh (off screen top)
+        const yVh = 10 - (110 * fullP); 
+        
+        // Fade in gradually
+        if (fullP < 0.2) {
+          restoredOpacity = fullP / 0.2;
+        } else {
+          restoredOpacity = 1;
+        }
+        
+        forestRestored.style.opacity = restoredOpacity;
+        forestRestored.style.transform = `translate(-50%, ${yVh}vh)`;
+      } else {
+        forestRestored.style.opacity = restoredOpacity;
+        forestRestored.style.transform = `translate(-50%, ${restoredY}px)`;
+      }
+    }
   }
 
   function onScroll() {

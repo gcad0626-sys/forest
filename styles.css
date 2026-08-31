@@ -197,6 +197,22 @@ body{
   opacity: 0;
 }
 
+.forest-restored {
+  position: absolute;
+  bottom: 12vh;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  opacity: 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: var(--sage);
+  z-index: 10;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
 .forest-timeline {
   position: absolute;
   right: clamp(20px, 5vw, 64px);
@@ -245,7 +261,7 @@ body{
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(201, 214, 184, 0.15);
+  background: rgba(255, 255, 255, 0.35);
 }
 .timeline-track-fill {
   position: absolute;
@@ -387,8 +403,8 @@ body{
 }
 .d-content {
   position: absolute;
-  top: 34px; 
-  left: 24px;
+  top: 27px; /* Align with the horizontal line which is at 36px */
+  left: 28px; /* Start right after the 20px horizontal line */
   opacity: 0;
   width: max-content;
   color: #FFFFFF;
@@ -397,7 +413,7 @@ body{
 .d-title {
   font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin: 0 0 4px 0;
   color: #75EAA4;
   letter-spacing: 0.05em;
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
@@ -405,6 +421,7 @@ body{
 .d-desc {
   font-size: 0.75rem;
   line-height: 1.4;
+  margin: 0;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
 }
@@ -427,6 +444,90 @@ body{
   will-change: transform, opacity;
 }
 
+/* ---------------------------------------------------
+   FOREST MINIMAP & DRONE VIEW
+--------------------------------------------------- */
+.forest-minimap {
+  position: absolute;
+  top: 40px;
+  left: clamp(48px, 10vw, 120px);
+  width: 120px;
+  height: 120px;
+  z-index: 5;
+  pointer-events: auto;
+}
+.minimap-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--sage);
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+.minimap-svg {
+  position: absolute;
+  top: 24px; left: 0;
+  width: 100px; height: 100px;
+  overflow: visible;
+  pointer-events: none;
+}
+.minimap-path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1.5px;
+  stroke-dasharray: 2 4;
+}
+.minimap-drone {
+  position: absolute;
+  top: 24px; left: 0;
+  width: 6px; height: 6px;
+  background: #75EAA4;
+  border-radius: 50%;
+  transform: translate(-50%, -50%); /* Center on coordinate */
+  box-shadow: 0 0 6px rgba(117, 234, 164, 0.4);
+  transition: box-shadow 0.3s ease;
+  pointer-events: none;
+  will-change: transform;
+}
+.forest-minimap:hover .minimap-drone {
+  box-shadow: 0 0 0 4px rgba(117, 234, 164, 0.2);
+}
+.minimap-hit-areas {
+  position: absolute;
+  top: 24px; left: 0;
+  width: 100px; height: 100px;
+}
+.minimap-hit {
+  position: absolute;
+  width: 24px; height: 24px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  border-radius: 50%;
+  /* background: rgba(255,0,0,0.2); Uncomment to debug hit areas */
+}
+
+.drone-view {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+}
+.drone-view-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--sage);
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+.drone-view-status {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--parchment);
+  transition: opacity 0.3s ease;
+}
+
 .narrative{
   position: absolute;
   inset: 0;
@@ -438,13 +539,20 @@ body{
   left: clamp(48px, 10vw, 120px);
   bottom: 12vh;
   max-width: min(560px, 80vw);
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.35s var(--ease), transform 0.5s var(--ease);
+  /* Controlled entirely by JS Interpolation */
 }
-.beat.is-active{
-  opacity: 1;
-  transform: translateY(0);
+.beat-kicker, .beat-title .line, .beat-text {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+.beat-title .line {
+  display: inline-block;
+}
+.title-emphasis {
+  transition: color 0.4s var(--ease), text-shadow 0.4s var(--ease);
+}
+.title-emphasis.is-highlighted {
+  color: #75EAA4;
 }
 .beat-kicker{
   font-size: 0.78rem;
@@ -601,6 +709,19 @@ body{
   .bird-svg {
     width: 16px;
     height: 16px;
+  }
+  
+  .forest-minimap {
+    display: none; /* Hide minimap on mobile to prevent clutter */
+  }
+  .drone-view {
+    top: 24px;
+  }
+  .drone-view-label {
+    font-size: 0.5rem;
+  }
+  .drone-view-status {
+    font-size: 0.65rem;
   }
 }
 
