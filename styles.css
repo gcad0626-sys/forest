@@ -636,6 +636,181 @@ body{
 }
 
 /* ---------------------------------------------------
+   FOREST CURSOR
+--------------------------------------------------- */
+.cursor-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 20; /* Below notes, above video */
+  overflow: hidden;
+}
+
+.leaf-particle {
+  position: absolute;
+  pointer-events: none;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(65, 87, 59, 0.7);
+  border-radius: 50% 0 50% 50%;
+  opacity: 0;
+  transform-origin: center;
+}
+
+.dot-particle {
+  position: absolute;
+  pointer-events: none;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(220, 230, 200, 0.7);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+@keyframes leafFade {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg) scale(0.8); }
+  20% { opacity: 0.7; }
+  100% { opacity: 0; transform: translate3d(var(--tx, 5px), var(--ty, -10px), 0) rotate(var(--rot, 30deg)) scale(1.1); }
+}
+
+@keyframes dotFade {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  30% { opacity: 0.7; }
+  100% { opacity: 0; transform: translate3d(var(--tx, -5px), var(--ty, -5px), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-layer { display: none !important; }
+}
+
+/* ---------------------------------------------------
+   FOREST NOTES
+--------------------------------------------------- */
+.notes-layer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 25; /* Above video, below some UI */
+}
+
+.forest-note {
+  position: absolute;
+  transform: translate(-50%, -50%) translateY(4px);
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  /* Custom bird cursor: simple outline bird */
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23fdfcf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L12 8L20 12L12 16Z"/></svg>') 12 12, pointer;
+}
+
+.forest-note.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateY(0);
+}
+
+@keyframes flapWings {
+  0% { transform: rotate(-8deg) translateY(0); }
+  50% { transform: rotate(8deg) translateY(-4px); }
+  100% { transform: rotate(-8deg) translateY(0); }
+}
+
+.note-icon {
+  width: 48px;
+  height: 48px;
+  background-image: url('../img/bird2.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  animation: flapWings 0.6s ease-in-out infinite;
+  transition: transform 0.3s var(--ease), filter 0.3s var(--ease);
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+.forest-note:hover .note-icon,
+.forest-note.is-open .note-icon {
+  transform: translateY(-2px) scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+}
+
+.note-panel {
+  position: absolute;
+  width: 280px;
+  background-image: url('../img/paper.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 40px 32px 48px;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.96) rotate(-2deg);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), visibility 0.5s;
+  color: #2b3a2e; /* dark green / charcoal */
+  pointer-events: none;
+  z-index: -1; /* behind the bird initially */
+}
+
+/* Alignments */
+.panel-align-top-right {
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom left;
+}
+.panel-align-top-left {
+  bottom: 50%;
+  right: 50%;
+  transform-origin: bottom right;
+}
+.panel-align-bottom-right {
+  top: 50%;
+  left: 50%;
+  transform-origin: top left;
+}
+.panel-align-bottom-left {
+  top: 50%;
+  right: 50%;
+  transform-origin: top right;
+}
+
+.note-panel-kicker {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(43, 58, 46, 0.7);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(43, 58, 46, 0.2);
+  padding-bottom: 6px;
+}
+
+.note-panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  color: #1a241c;
+}
+
+.note-panel-desc {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: rgba(43, 58, 46, 0.9);
+  margin: 0;
+}
+
+.forest-note.is-open .note-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* ---------------------------------------------------
    Responsive
 --------------------------------------------------- */
 @media (max-width: 640px){

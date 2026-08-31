@@ -128,6 +128,76 @@
   initEcologyLayer();
 
   /* ---------------------------------------------------
+     FOREST NOTES DATA
+  --------------------------------------------------- */
+  const notesLayer = document.getElementById("notesLayer");
+  const notesData = [
+    { start: 0.12, end: 0.20, x: 35, y: 65, align: 'top-right', kicker: 'FOREST ARCHIVE / 1970s', title: '산림녹화의 기록', desc: '1970년대 우리나라는 황폐한 산림을 되살리기 위해 전국적인 산림녹화 사업을 추진했습니다.' },
+    { start: 0.25, end: 0.40, x: 60, y: 55, align: 'top-left', kicker: 'FOREST NOTE / TREE SPECIES', title: '한반도의 대표 수종', desc: '우리나라 산림에는 소나무, 참나무류, 낙엽송 등 지역과 환경에 맞는 다양한 나무가 자랍니다. 조림에서도 지역의 환경과 나무의 특성을 고려합니다.' },
+    { start: 0.43, end: 0.60, x: 50, y: 60, align: 'top-right', kicker: 'FOREST ECOLOGY / HABITAT', title: '숲이 만드는 작은 생태계', desc: '나무가 자라면 그늘과 습도가 달라지고, 곤충과 새를 비롯한 다양한 생물이 살아갈 환경이 만들어집니다.' },
+    { start: 0.65, end: 0.82, x: 70, y: 30, align: 'bottom-left', kicker: 'FOREST ECOLOGY / CARBON', title: '숲의 탄소 저장', desc: '나무는 성장하면서 대기 중의 이산화탄소를 흡수하고 탄소를 나무와 토양에 저장합니다. 숲의 성장은 기후를 지키는 과정이기도 합니다.' },
+    { start: 0.86, end: 0.92, x: 25, y: 35, align: 'bottom-right', kicker: 'FOREST ECOLOGY / BIODIVERSITY', title: '숲이 품은 생명', desc: '성숙한 숲은 나무뿐 아니라 다양한 식물과 곤충, 새, 포유류가 함께 살아가는 하나의 생태계가 됩니다.' }
+  ];
+  let forestNotes = [];
+
+  function initNotes() {
+    if (!notesLayer) return;
+    
+    // Close other notes when one is clicked
+    const closeAllNotes = (exceptIndex = -1) => {
+      forestNotes.forEach((n, i) => {
+        if (i !== exceptIndex && n.el.classList.contains("is-open")) {
+          n.el.classList.remove("is-open");
+        }
+      });
+    };
+
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest('.forest-note')) {
+        closeAllNotes();
+      }
+    });
+
+    forestNotes = notesData.map((data, index) => {
+      const pt = document.createElement("div");
+      pt.className = "forest-note";
+      pt.style.left = data.x + "%";
+      pt.style.top = data.y + "%";
+      
+      pt.innerHTML = `
+        <button class="note-icon" aria-label="숲의 기록 열기"></button>
+        <div class="note-panel panel-align-${data.align}">
+          <div class="note-panel-kicker">${data.kicker}</div>
+          <div class="note-panel-title">${data.title}</div>
+          <p class="note-panel-desc">${data.desc}</p>
+        </div>
+      `;
+      
+      const iconBtn = pt.querySelector('.note-icon');
+      iconBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = pt.classList.contains("is-open");
+        closeAllNotes(index);
+        if (!isOpen) {
+          pt.classList.add("is-open");
+        } else {
+          pt.classList.remove("is-open");
+        }
+      });
+      
+      notesLayer.appendChild(pt);
+      
+      return {
+        data: data,
+        el: pt,
+        lastP: -1
+      };
+    });
+  }
+  initNotes();
+
+  /* ---------------------------------------------------
      FOREST MINIMAP & DRONE VIEW DATA
   --------------------------------------------------- */
   const minimapDrone = document.getElementById("minimapDrone");
@@ -442,6 +512,26 @@
       bird.el.style.transform = `translate3d(${currentX}vw, calc(${currentY}vh + ${bounce}px), 0) scale(${scale}) rotate(${baseRotate + bounce*0.5}deg)`;
     });
 
+    // Update Forest Notes Interpolation
+    forestNotes.forEach(note => {
+      const { start, end } = note.data;
+      let isVisible = false;
+      
+      if (progress >= start && progress <= end) {
+        isVisible = true;
+      }
+      
+      if (isVisible) {
+        note.el.classList.add("is-visible");
+      } else {
+        note.el.classList.remove("is-visible");
+        // Auto-close if out of range
+        if (note.el.classList.contains("is-open")) {
+          note.el.classList.remove("is-open");
+        }
+      }
+    });
+
     // -------------------------------------------------
     // FOREST COMPLETION ENDING UI FADE
     // -------------------------------------------------
@@ -548,6 +638,80 @@
   replayBtn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  /* ---------------------------------------------------
+     FOREST CURSOR
+  --------------------------------------------------- */
+  const cursorLayer = document.getElementById("cursorLayer");
+  
+  if (cursorLayer) {
+    const POOL_SIZE = 12;
+    const particles = [];
+    let poolIndex = 0;
+    
+    // Create pool
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const el = document.createElement("div");
+      el.className = "leaf-particle";
+      cursorLayer.appendChild(el);
+      particles.push(el);
+    }
+    
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    
+    const triggerDistance = 20; // pixels
+    
+    document.addEventListener("mousemove", (e) => {
+      // Exclusion zones
+      const excluded = e.target.closest('.narrative, .beat, .forest-note, .forest-minimap, .forest-timeline, .drone-view, header, footer');
+      if (excluded) return;
+      
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      const dist = Math.hypot(dx, dy);
+      
+      if (dist > triggerDistance) {
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        
+        // Spawn chance based on progress
+        const p = getProgress();
+        let spawnChance = 0;
+        let useDot = false;
+        
+        if (p < 0.25) spawnChance = 0.15; // increased from 0
+        else if (p < 0.43) spawnChance = 0.4;
+        else if (p < 0.65) spawnChance = 0.7;
+        else if (p < 0.90) { spawnChance = 1.0; useDot = Math.random() > 0.6; }
+        else spawnChance = 0.2;
+        
+        if (Math.random() < spawnChance) {
+          const el = particles[poolIndex];
+          poolIndex = (poolIndex + 1) % POOL_SIZE;
+          
+          el.className = useDot ? "dot-particle" : "leaf-particle";
+          el.style.left = `${e.clientX}px`;
+          el.style.top = `${e.clientY}px`;
+          
+          // Randomize animation variables
+          const tx = (Math.random() - 0.5) * 20; // -10 to 10
+          const ty = (Math.random() * -15) - 5; // -20 to -5
+          const rot = (Math.random() - 0.5) * 90; // -45 to 45
+          const duration = 0.6 + Math.random() * 0.6; // 0.6 to 1.2
+          
+          el.style.setProperty('--tx', `${tx}px`);
+          el.style.setProperty('--ty', `${ty}px`);
+          el.style.setProperty('--rot', `${rot}deg`);
+          
+          // Reset animation by removing and adding
+          el.style.animation = 'none';
+          void el.offsetWidth; // trigger reflow
+          el.style.animation = `${useDot ? 'dotFade' : 'leafFade'} ${duration}s ease-out forwards`;
+        }
+      }
+    });
+  }
 
   init();
 })();
