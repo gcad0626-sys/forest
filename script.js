@@ -24,6 +24,92 @@
   const stageItems = Array.from(document.querySelectorAll(".stage-item"));
   const beats = Array.from(document.querySelectorAll(".beat"));
   const replayBtn = document.getElementById("replayBtn");
+  const discoveryLayer = document.getElementById("discoveryLayer");
+
+  /* ---------------------------------------------------
+     FOREST DISCOVERY DATA
+  --------------------------------------------------- */
+  const discoveryData = [
+    { start: 0.08, end: 0.18, x: 25, y: 55, title: '숲의 시작', desc: '비어 있던 산에 작은 묘목이<br>자리 잡기 시작합니다.' },
+    { start: 0.22, end: 0.32, x: 65, y: 45, title: '어린 묘목', desc: '작은 나무들이 자라며<br>새로운 숲을 만들어갑니다.' },
+    { start: 0.35, end: 0.45, x: 40, y: 75, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
+    { start: 0.65, end: 0.75, x: 35, y: 40, title: '성장한 나무', desc: '나무가 높아지고 수관이 넓어지며<br>숲이 연결됩니다.' },
+    { start: 0.82, end: 0.92, x: 50, y: 35, title: '숲의 완성', desc: '성장한 나무들이 하나의<br>울창한 숲을 이룹니다.' }
+  ];
+  let discoveryPoints = [];
+
+  function initDiscoveryPoints() {
+    if (!discoveryLayer) return;
+    discoveryPoints = discoveryData.map(data => {
+      const pt = document.createElement("div");
+      pt.className = "discovery-point";
+      pt.style.left = data.x + "%";
+      pt.style.top = data.y + "%";
+      pt.innerHTML = `
+        <div class="d-marker">
+          <div class="d-dot"></div>
+          <div class="d-ring"></div>
+        </div>
+        <div class="d-lines">
+          <div class="d-line-v"></div>
+          <div class="d-line-h"></div>
+        </div>
+        <div class="d-content">
+          <h4 class="d-title">${data.title}</h4>
+          <p class="d-desc">${data.desc}</p>
+        </div>
+      `;
+      discoveryLayer.appendChild(pt);
+      
+      return {
+        data: data,
+        lastP: -1,
+        dot: pt.querySelector(".d-dot"),
+        ring: pt.querySelector(".d-ring"),
+        lineV: pt.querySelector(".d-line-v"),
+        lineH: pt.querySelector(".d-line-h"),
+        content: pt.querySelector(".d-content")
+      };
+    });
+  }
+  initDiscoveryPoints();
+
+  /* ---------------------------------------------------
+     ECOLOGY LAYER DATA (Birds)
+  --------------------------------------------------- */
+  const ecologyLayer = document.getElementById("ecologyLayer");
+  const birdsData = [
+    {
+      id: 'bird-1', start: 0.53, end: 0.72,
+      startX: 10, startY: 20, endX: 90, endY: 35,
+      scale: 1.0, baseRotate: 5
+    },
+    {
+      id: 'bird-2', start: 0.60, end: 0.76,
+      startX: 85, startY: 45, endX: 20, endY: 15,
+      scale: 0.8, baseRotate: -10
+    }
+  ];
+  let birds = [];
+
+  function initEcologyLayer() {
+    if (!ecologyLayer) return;
+    const BIRD_SVG = `<svg viewBox="0 0 32 32" fill="rgba(0,0,0,0.6)" xmlns="http://www.w3.org/2000/svg"><path d="M3.2,16 C8,12 12,13 16,16 C20,13 24,12 28.8,16 C25,14 20,14.5 16,18 C12,14.5 7,14 3.2,16 Z"/></svg>`;
+    
+    birds = birdsData.map(data => {
+      const pt = document.createElement("div");
+      pt.className = "bird-svg";
+      pt.innerHTML = BIRD_SVG;
+      ecologyLayer.appendChild(pt);
+      
+      return {
+        data: data,
+        el: pt,
+        lastP: -1
+      };
+    });
+  }
+  initEcologyLayer();
 
   /* ---------------------------------------------------
      Preload frames
@@ -162,6 +248,69 @@
           dot.style.borderColor = "";
         }
       }
+    });
+
+    // Update Discovery Points Interpolation
+    discoveryPoints.forEach(pt => {
+      const { start, end } = pt.data;
+      let p = 0;
+      if (progress >= start && progress <= end) {
+        const fadeZone = 0.02;
+        if (progress < start + fadeZone) {
+          p = (progress - start) / fadeZone;
+        } else if (progress > end - fadeZone) {
+          p = (end - progress) / fadeZone;
+        } else {
+          p = 1;
+        }
+      }
+      
+      if (p === 0 && pt.lastP === 0) return;
+      pt.lastP = p;
+
+      const pDots = Math.max(0, Math.min(1, p / 0.2));
+      const pRing = Math.max(0, Math.min(1, (p - 0.1) / 0.3));
+      const pRingOp = Math.max(0, Math.min(1, (p - 0.1) / 0.1)) * (1 - Math.max(0, Math.min(1, (p - 0.2) / 0.2)));
+      const pLineV = Math.max(0, Math.min(1, (p - 0.2) / 0.3));
+      const pLineH = Math.max(0, Math.min(1, (p - 0.4) / 0.3));
+      const pText = Math.max(0, Math.min(1, (p - 0.6) / 0.4));
+
+      pt.dot.style.transform = `scale(${pDots})`;
+      pt.dot.style.opacity = pDots;
+      
+      pt.ring.style.transform = `scale(${1 + pRing * 1.5})`;
+      pt.ring.style.opacity = pRingOp;
+
+      pt.lineV.style.height = `${pLineV * 30}px`;
+      pt.lineH.style.width = `${pLineH * 20}px`;
+
+      pt.content.style.opacity = pText;
+      pt.content.style.transform = `translateY(${(1 - pText) * 10}px)`;
+    });
+
+    // Update Ecology Birds Interpolation
+    birds.forEach(bird => {
+      const { start, end, startX, startY, endX, endY, scale, baseRotate } = bird.data;
+      let p = 0;
+      if (progress > start && progress < end) {
+        p = (progress - start) / (end - start);
+      }
+      
+      if (p === 0 && bird.lastP === 0) return;
+      bird.lastP = p;
+
+      if (p === 0) {
+        bird.el.style.opacity = 0;
+        return;
+      }
+
+      const currentX = startX + (endX - startX) * p;
+      const currentY = startY + (endY - startY) * p;
+      const bounce = Math.sin(p * Math.PI * 8) * 5; // 4 bounces
+      const opacity = Math.sin(p * Math.PI); // smooth fade in and out
+
+      bird.el.style.opacity = opacity;
+      bird.el.style.transform = `translate3d(${currentX}vw, calc(${currentY}vh + ${bounce}px), 0) scale(${scale}) rotate(${baseRotate + bounce*0.5}deg)`;
     });
   }
 

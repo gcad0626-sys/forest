@@ -325,6 +325,108 @@ body{
   white-space: nowrap;
 }
 
+/* ---------------------------------------------------
+   FOREST DISCOVERY (Editorial UI)
+--------------------------------------------------- */
+.discovery-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.discovery-point {
+  position: absolute;
+  /* top/left will be set inline by JS */
+}
+.d-marker {
+  position: absolute;
+  top: 0; left: 0;
+  width: 12px; height: 12px;
+  transform: translate(-50%, -50%);
+}
+.d-dot {
+  position: absolute;
+  inset: 2px;
+  background: #75EAA4;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  /* Animated via scroll inline styles */
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+.d-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #75EAA4;
+  border-radius: 50%;
+  transform: scale(1);
+  opacity: 0;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+.d-lines {
+  position: absolute;
+  top: 0; left: 0;
+}
+.d-line-v {
+  position: absolute;
+  top: 6px; 
+  left: 0px;
+  width: 1px;
+  height: 0px; /* animated up to 30px */
+  background: rgba(117, 234, 164, 0.8);
+  box-shadow: 1px 0 2px rgba(0,0,0,0.3);
+}
+.d-line-h {
+  position: absolute;
+  top: 36px;
+  left: 0px;
+  height: 1px;
+  width: 0px; /* animated up to 20px */
+  background: rgba(117, 234, 164, 0.8);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.d-content {
+  position: absolute;
+  top: 34px; 
+  left: 24px;
+  opacity: 0;
+  width: max-content;
+  color: #FFFFFF;
+  transform: translateY(10px);
+}
+.d-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #75EAA4;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+.d-desc {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* ---------------------------------------------------
+   ECOLOGY LAYER (Birds)
+--------------------------------------------------- */
+.ecology-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3; /* Behind discovery layer */
+}
+.bird-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 24px;
+  height: 24px;
+  opacity: 0; /* JS will control opacity and transform */
+  will-change: transform, opacity;
+}
+
 .narrative{
   position: absolute;
   inset: 0;
@@ -481,6 +583,24 @@ body{
     font-size: 0.75rem;
     position: absolute;
     top: -20px;
+  }
+  
+  /* Mobile Discovery Points */
+  .d-line-v, .d-line-h, .d-desc {
+    display: none;
+  }
+  .d-content {
+    top: 10px;
+    left: 10px;
+  }
+  .d-title {
+    font-size: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  }
+  
+  .bird-svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
