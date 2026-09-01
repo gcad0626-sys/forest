@@ -873,81 +873,133 @@
 
   const statusItems = statusSection.querySelectorAll('.status-item');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let hasAnimated = false;
 
   // Easing function: ease-out cubic
   const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 
+  // 각 item에 대한 상태 저장 (originalText, rafId, staggerTimer)
+  const itemStates = [];
+  statusItems.forEach((item, index) => {
+    const valElem = item.querySelector('.status-value');
+    if (!valElem) { itemStates.push(null); return; }
+    // 최초 1회만 originalText를 캐싱
+    if (!valElem.dataset.originalText) {
+      valElem.dataset.originalText = valElem.textContent.trim();
+    }
+    itemStates.push({ rafId: null, staggerTimer: null });
+  });
+
+  // 모든 진행 중 애니메이션 즉시 cancel 후 초기값으로 reset
+  function resetStatusValues() {
+    statusItems.forEach((item, index) => {
+      const valElem = item.querySelector('.status-value');
+      const state = itemStates[index];
+      if (!valElem || !state) return;
+
+      // stagger setTimeout cancel
+      if (state.staggerTimer !== null) {
+        clearTimeout(state.staggerTimer);
+        state.staggerTimer = null;
+      }
+      // rAF cancel (cancelAnimationFrame는 이미 끝난 ID엔 무해)
+      if (state.rafId !== null) {
+        cancelAnimationFrame(state.rafId);
+        state.rafId = null;
+      }
+
+      valElem.classList.remove('is-animating', 'status-loaded');
+      const isWeather = (index === 3);
+      // 날씨 항목은 텍스트 그대로, 숫자 항목은 0으로
+      if (!isWeather) {
+        const originalText = valElem.dataset.originalText;
+        const numberMatch = originalText.match(/(\d+)/);
+        if (numberMatch) {
+          const prefix = originalText.substring(0, numberMatch.index);
+          const suffix = originalText.substring(numberMatch.index + numberMatch[1].length);
+          valElem.textContent = prefix + '0' + suffix;
+        } else {
+          valElem.textContent = originalText;
+        }
+      } else {
+        valElem.textContent = valElem.dataset.originalText;
+      }
+    });
+  }
+
+  let isAnimating = false;
+
   function animateStatusValues() {
-    if (hasAnimated) return;
-    hasAnimated = true;
+    if (isAnimating) return;
+    isAnimating = true;
 
     if (prefersReducedMotion) {
       statusItems.forEach(item => {
         const valElem = item.querySelector('.status-value');
-        if (valElem) {
-          valElem.classList.add('status-loaded');
-        }
+        if (valElem) valElem.classList.add('status-loaded');
       });
       return;
     }
 
     statusItems.forEach((item, index) => {
       const valElem = item.querySelector('.status-value');
-      const labelElem = item.querySelector('.status-label');
-      if (!valElem) return;
+      const state = itemStates[index];
+      if (!valElem || !state) return;
 
-      const originalText = valElem.textContent.trim();
+      const originalText = valElem.dataset.originalText;
       const isWeather = (index === 3);
-      
-      // Delay each item slightly for a staggered effect
-      setTimeout(() => {
+
+      state.staggerTimer = setTimeout(() => {
+        state.staggerTimer = null;
         valElem.classList.add('is-animating');
 
-        // Check if there's a number and it's not the weather item
         const numberMatch = originalText.match(/(\d+)/);
         if (numberMatch && !isWeather) {
           const targetNumber = parseInt(numberMatch[1], 10);
           const prefix = originalText.substring(0, numberMatch.index);
           const suffix = originalText.substring(numberMatch.index + numberMatch[1].length);
-          
+
           const duration = 800;
           const startTime = performance.now();
 
           function updateNumber(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
             const currentNumber = Math.floor(targetNumber * easeOut(progress));
             valElem.textContent = prefix + currentNumber + suffix;
 
             if (progress < 1) {
-              requestAnimationFrame(updateNumber);
+              state.rafId = requestAnimationFrame(updateNumber);
             } else {
+              state.rafId = null;
               valElem.textContent = originalText;
               valElem.classList.add('status-loaded');
             }
           }
-          requestAnimationFrame(updateNumber);
+          state.rafId = requestAnimationFrame(updateNumber);
         } else {
-          // No number or is weather, just wait 800ms to add emphasis
-          setTimeout(() => {
+          const timer = setTimeout(() => {
             valElem.classList.add('status-loaded');
           }, 800);
+          // 이 timer는 stagger 내부라 state.staggerTimer로 추적 불가하므로
+          // isAnimating reset 후 cancel할 수 없지만, 짧은 시간이라 무방함
         }
       }, index * 100);
     });
   }
 
-  const observer = new IntersectionObserver((entries, obs) => {
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
+        // 영역 진입: count-up 실행
         animateStatusValues();
-        obs.unobserve(entry.target);
+      } else {
+        // 영역 이탈: 애니메이션 cancel + 초기값 reset
+        isAnimating = false;
+        resetStatusValues();
       }
     });
   }, {
-    threshold: 0.1
+    threshold: 0.3
   });
 
   observer.observe(statusSection);
@@ -966,17 +1018,44 @@
 
   var scrambleEls = Array.from(statsSection.querySelectorAll('.scramble-num'));
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var hasAnimated = false;
+
+  // 각 el마다 rafId와 staggerTimer 추적
+  var elStates = scrambleEls.map(function() {
+    return { rafId: null, staggerTimer: null };
+  });
+
+  // 진입 중 중복 실행 방지
+  var isAnimating = false;
 
   function formatWithComma(n) {
     return Math.round(n).toLocaleString('en-US');
   }
 
-  function scrambleAnimate(el, targetVal, hasComma, delay) {
+  // 모든 진행 중 scramble 즉시 cancel + 초기 표시값으로 reset
+  function resetScramble() {
+    elStates.forEach(function(state, i) {
+      if (state.staggerTimer !== null) {
+        clearTimeout(state.staggerTimer);
+        state.staggerTimer = null;
+      }
+      if (state.rafId !== null) {
+        cancelAnimationFrame(state.rafId);
+        state.rafId = null;
+      }
+    });
+    scrambleEls.forEach(function(el) {
+      el.classList.remove('settled', 'done');
+      // 초기 표시값: dataset.reset이 있으면 그것, 없으면 '—'
+      el.textContent = el.dataset.reset !== undefined ? el.dataset.reset : '—';
+    });
+  }
+
+  function scrambleAnimate(el, state, targetVal, hasComma, delay) {
     var DURATION = 1100;
     var SETTLE_DURATION = 180;
 
-    setTimeout(function() {
+    state.staggerTimer = setTimeout(function() {
+      state.staggerTimer = null;
       var start = performance.now();
 
       function tick(now) {
@@ -990,8 +1069,9 @@
           var center = targetVal + (1 - eased) * targetVal * 4;
           var randVal = Math.max(1, center - range / 2 + Math.random() * range);
           el.textContent = hasComma ? formatWithComma(randVal) : String(Math.round(randVal));
-          requestAnimationFrame(tick);
+          state.rafId = requestAnimationFrame(tick);
         } else {
+          state.rafId = null;
           var finalText = el.dataset.formatted ? el.dataset.formatted : String(targetVal);
           el.textContent = finalText;
           el.classList.add('settled');
@@ -1001,13 +1081,13 @@
           }, SETTLE_DURATION);
         }
       }
-      requestAnimationFrame(tick);
+      state.rafId = requestAnimationFrame(tick);
     }, delay);
   }
 
   function runScramble() {
-    if (hasAnimated) return;
-    hasAnimated = true;
+    if (isAnimating) return;
+    isAnimating = true;
 
     if (prefersReducedMotion) {
       scrambleEls.forEach(function(el) {
@@ -1019,18 +1099,26 @@
     scrambleEls.forEach(function(el, index) {
       var rawVal = parseInt(el.dataset.value, 10);
       var hasComma = el.dataset.formatted !== undefined;
-      scrambleAnimate(el, rawVal, hasComma, index * 110);
+      // 초기 표시값을 dataset.reset에 저장 (최초 1회)
+      if (el.dataset.reset === undefined) {
+        el.dataset.reset = el.textContent.trim();
+      }
+      scrambleAnimate(el, elStates[index], rawVal, hasComma, index * 110);
     });
   }
 
-  var observer = new IntersectionObserver(function(entries, obs) {
+  var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
+        // 영역 진입: scramble 실행
         runScramble();
-        obs.unobserve(entry.target);
+      } else {
+        // 영역 이탈: cancel + reset
+        isAnimating = false;
+        resetScramble();
       }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.3 });
 
   observer.observe(observeTarget);
 })();

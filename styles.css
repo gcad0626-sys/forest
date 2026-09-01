@@ -1192,16 +1192,29 @@ body {
   padding: 0;
 }
 
+.gnb-nav li {
+  border-radius: 8px;
+  transition: background-color 250ms ease;
+}
+
 .gnb-nav a {
+  display: block;
   text-decoration: none;
   color: #111;
   font-weight: 500;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  padding: 6px 12px;
+  border-radius: 8px;
 }
 
-.gnb-nav a:hover {
-  color: #2c5a3b;
+/* 데스크탑 Hover 배경 효과 — 글자색은 변경 없음 */
+@media (hover: hover) and (pointer: fine) {
+  .gnb-nav a:hover,
+  .gnb-nav a:focus-visible {
+    background-color: #EAF7ED;
+    color: #111;
+    outline: none;
+  }
 }
 
 .gnb-utils {
@@ -1495,6 +1508,16 @@ body {
   line-height: 1.2;
 }
 
+/* FOREST FUTURE 전용 타이틀 */
+.future-title {
+  font-weight: 600;
+}
+
+.future-title-small {
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
 .banner-subtitle {
   font-size: 1.2rem;
   font-weight: 400;
@@ -1509,6 +1532,10 @@ body {
   gap: 80px;
 }
 
+.stat {
+  text-align: center;
+}
+
 .stat-label {
   font-size: 1.1rem;
   opacity: 0.9;
@@ -1519,6 +1546,10 @@ body {
   font-size: 4.5rem;
   font-weight: 700;
   line-height: 1;
+}
+
+.stat-value .scramble-num {
+  color: #90FAA0;
 }
 
 .stat-value .unit {
@@ -1873,7 +1904,7 @@ input {
 
 .stories-title-area {
   position: absolute;
-  top: 15%;
+  top: 5%;
   left: 5%;
   z-index: 5;
 }
@@ -1948,6 +1979,7 @@ input {
   right: 5%;
   top: 35%;
   z-index: 2;
+  padding-left: 100px;
 }
 
 /* Center Image */
@@ -1992,7 +2024,7 @@ input {
   right: 5%;
   top: 7%;
   z-index: 2;
-  padding: 15px 80px 65px 200px;
+  padding: 15px 80px 65px 220px;
 }
 
 .blob-recreation h3,
@@ -2007,7 +2039,7 @@ input {
   opacity: 0.9;
 }
 
-/* 05 Policy */
+/* 04 Policy */
 .blob-policy {
   background: transparent url('img/5.png') center/100% 100% no-repeat;
   width: 35%;
@@ -2015,7 +2047,7 @@ input {
   right: 2%;
   top: calc(35% + 235px);
   z-index: 4;
-  padding: 50px 140px 40px 80px;
+  padding: 50px 140px 40px 100px;
 }
 
 .blob-policy h3,
