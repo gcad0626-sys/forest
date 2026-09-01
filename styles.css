@@ -1,4 +1,4 @@
-/* ---------------------------------------------------
+﻿/* ---------------------------------------------------
    Tokens
 --------------------------------------------------- */
 :root {
@@ -505,16 +505,15 @@ body {
 }
 
 .d-title {
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   color: #75EAA4;
   letter-spacing: 0.05em;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
 .d-desc {
-  font-size: 0.75rem;
+  font-size: 1rem;
   line-height: 1.4;
   margin: 0;
   color: rgba(255, 255, 255, 0.95);
@@ -885,8 +884,8 @@ body {
 }
 
 .note-icon {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   background-image: url('img/bird2.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -1989,7 +1988,7 @@ input {
   right: 5%;
   top: 7%;
   z-index: 2;
-  padding: 40px 140px 40px 140px;
+  padding: 0px 80px 80px 200px;
 }
 
 .blob-recreation h3,
@@ -2074,4 +2073,116 @@ input {
   .contour-bg {
     opacity: 0.3;
   }
+}/* ===================================================
+   FOREST STORIES INTERACTIONS
+=================================================== */
+
+.interactive-blob {
+  cursor: pointer;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease, opacity 0.5s ease !important;
 }
+
+/* Base state for blobs when container is hovered (to slightly dim others) */
+.organic-container.is-active .interactive-blob {
+  opacity: 0.8;
+  filter: brightness(0.95);
+}
+
+/* Active state for hovered blob */
+.organic-container.is-active .interactive-blob.active {
+  opacity: 1;
+  filter: brightness(1.05);
+  transform: translateY(-5px) scale(1.02) !important;
+  z-index: 10; /* Bring to front */
+}
+
+/* Emphasize text when active */
+.interactive-blob.active h3,
+.interactive-blob.active .story-meta {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Center Image Layering */
+.blob-center-img {
+  position: absolute;
+}
+
+.center-img-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.6s ease-in-out, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform, opacity;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; /* Keep shape */
+}
+
+.center-img-layer.crossfade-layer {
+  opacity: 0;
+  z-index: 2;
+}
+
+.center-img-layer.base-layer {
+  z-index: 1;
+}
+
+/* Active zoom and parallax applied via JS/CSS */
+.blob-center-img.zoom-active .center-img-layer {
+  transform: scale(1.035);
+}
+
+/* Interactive Contour effect */
+.contour-bg path {
+  transition: stroke 0.6s ease, stroke-width 0.6s ease;
+}
+
+.organic-container.is-active ~ .contour-bg path {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+/* Cancel old hover effects */
+.blob:hover {
+  transform: none; /* override old hover */
+}
+.blob-center-img:hover img {
+  transform: none; /* override old zoom */
+}
+
+.d-title { text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); }
+
+/* ===================================================
+   FOREST STATUS INTERACTIONS
+=================================================== */
+
+.status-value {
+  opacity: 0;
+  transform: translateY(10px);
+  will-change: opacity, transform;
+}
+
+/* Base class for when data count up starts / is preparing */
+.status-value.is-animating {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+/* Final emphasis when loaded */
+.status-value.status-loaded {
+  opacity: 1;
+  transform: scale(1.02);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-value,
+  .status-value.is-animating,
+  .status-value.status-loaded {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+

@@ -43,8 +43,8 @@
   const discoveryData = [
     { start: 0.08, end: 0.18, x: 25, y: 55, title: '숲의 시작', desc: '비어 있던 산에 작은 묘목이<br>자리 잡기 시작합니다.' },
     { start: 0.22, end: 0.32, x: 65, y: 45, title: '어린 묘목', desc: '작은 나무들이 자라며<br>새로운 숲을 만들어갑니다.' },
-    { start: 0.26, end: 0.36, x: 52, y: 68, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
-    { start: 0.65, end: 0.75, x: 35, y: 40, title: '성장한 나무', desc: '나무가 높아지고 수관이 넓어지며<br>숲이 연결됩니다.' },
+    { start: 0.40, end: 0.52, x: 52, y: 68, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
+    { start: 0.62, end: 0.72, x: 35, y: 40, title: '성장한 나무', desc: '나무가 높아지고 수관이 넓어지며<br>숲이 연결됩니다.' },
     { start: 0.82, end: 0.94, x: 50, y: 35, title: '숲의 완성', desc: '성장한 나무들이 하나의<br>울창한 숲을 이룹니다.' }
   ];
   let discoveryPoints = [];
@@ -715,3 +715,241 @@
 
   init();
 })();
+
+/* ===================================================
+   FOREST STORIES INTERACTION LOGIC
+=================================================== */
+(function() {
+  const container = document.querySelector('.organic-container');
+  if (!container) return;
+
+  const blobs = container.querySelectorAll('.interactive-blob');
+  const centerImgContainer = document.getElementById('blobCenterImg');
+  const baseImg = document.getElementById('centerImgBase');
+  const crossfadeImg = document.getElementById('centerImgCrossfade');
+  const contourPaths = document.querySelectorAll('.contour-bg path');
+  
+  let isHovering = false;
+  let activeBlob = null;
+  let restoreTimeout;
+  
+  // Preload images
+  blobs.forEach(blob => {
+    const src = blob.getAttribute('data-target-img');
+    if (src) {
+      const img = new Image();
+      img.src = src;
+    }
+  });
+
+  // Check for reduced motion
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+  function activateBlob(blob) {
+    if (activeBlob === blob) return;
+    activeBlob = blob;
+    clearTimeout(restoreTimeout);
+    
+    // Update classes
+    container.classList.add('is-active');
+    blobs.forEach(b => b.classList.remove('active'));
+    blob.classList.add('active');
+    
+    // Trigger zoom only
+    if (centerImgContainer) centerImgContainer.classList.add('zoom-active');
+  }
+
+  function restoreDefault() {
+    activeBlob = null;
+    if (container) container.classList.remove('is-active');
+    blobs.forEach(b => b.classList.remove('active'));
+    
+    // Reset zoom
+    if (centerImgContainer) centerImgContainer.classList.remove('zoom-active');
+    
+    // Reset parallax
+    if (!prefersReducedMotion && !isTouchDevice) {
+      if (baseImg) baseImg.style.transform = '';
+      if (crossfadeImg) crossfadeImg.style.transform = '';
+    }
+  }
+
+  // Event Listeners for Blobs
+  blobs.forEach(blob => {
+    // Mouse enter
+    blob.addEventListener('mouseenter', () => {
+      isHovering = true;
+      activateBlob(blob);
+    });
+    
+    // Focus for accessibility
+    blob.addEventListener('focus', () => {
+      isHovering = true;
+      activateBlob(blob);
+    });
+
+    // Touch (Tap) support
+    blob.addEventListener('click', (e) => {
+      // If it's a touch device and the blob isn't active, make it active first (don't navigate immediately)
+      // If they click the arrow inside, let it navigate.
+      if (isTouchDevice && !e.target.closest('.btn-arrow')) {
+        if (activeBlob !== blob) {
+          e.preventDefault();
+          activateBlob(blob);
+        }
+      }
+    });
+  });
+
+  // Leave entire container
+  if (container) {
+    container.addEventListener('mouseleave', () => {
+      isHovering = false;
+      restoreTimeout = setTimeout(restoreDefault, 100); // slight debounce
+    });
+
+    // Blur (accessibility)
+    container.addEventListener('focusout', (e) => {
+      if (!container.contains(e.relatedTarget)) {
+        isHovering = false;
+        restoreTimeout = setTimeout(restoreDefault, 100);
+      }
+    });
+  }
+
+  // Micro Parallax on Mouse Move over Container
+  if (!prefersReducedMotion && !isTouchDevice && container) {
+    let rafId;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    container.addEventListener('mousemove', (e) => {
+      if (!activeBlob) return; // Only parallax when a card is active
+
+      const rect = container.getBoundingClientRect();
+      // Calculate mouse position relative to center of container (-1 to 1)
+      const xPos = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const yPos = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+
+      // Max movement: X: 8px, Y: 4px
+      targetX = xPos * 8;
+      targetY = yPos * 4;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateParallax);
+      }
+    });
+
+    function updateParallax() {
+      if (!activeBlob) {
+        rafId = null;
+        return;
+      }
+
+      // Smooth interpolation
+      currentX += (targetX - currentX) * 0.1;
+      currentY += (targetY - currentY) * 0.1;
+
+      // We combine the base zoom (scale 1.035) with translate
+      const transformStr = `translate(${currentX}px, ${currentY}px) scale(1.035)`;
+      
+      if (baseImg) baseImg.style.transform = transformStr;
+      if (crossfadeImg) crossfadeImg.style.transform = transformStr;
+
+      rafId = requestAnimationFrame(updateParallax);
+    }
+  }
+})();
+
+/* ===================================================
+   FOREST STATUS INTERACTION LOGIC
+=================================================== */
+(function() {
+  const statusSection = document.querySelector('.forest-status');
+  if (!statusSection) return;
+
+  const statusItems = statusSection.querySelectorAll('.status-item');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let hasAnimated = false;
+
+  // Easing function: ease-out cubic
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+  function animateStatusValues() {
+    if (hasAnimated) return;
+    hasAnimated = true;
+
+    if (prefersReducedMotion) {
+      statusItems.forEach(item => {
+        const valElem = item.querySelector('.status-value');
+        if (valElem) {
+          valElem.classList.add('status-loaded');
+        }
+      });
+      return;
+    }
+
+    statusItems.forEach((item, index) => {
+      const valElem = item.querySelector('.status-value');
+      const labelElem = item.querySelector('.status-label');
+      if (!valElem) return;
+
+      const originalText = valElem.textContent.trim();
+      const isWeather = (index === 3);
+      
+      // Delay each item slightly for a staggered effect
+      setTimeout(() => {
+        valElem.classList.add('is-animating');
+
+        // Check if there's a number and it's not the weather item
+        const numberMatch = originalText.match(/(\d+)/);
+        if (numberMatch && !isWeather) {
+          const targetNumber = parseInt(numberMatch[1], 10);
+          const prefix = originalText.substring(0, numberMatch.index);
+          const suffix = originalText.substring(numberMatch.index + numberMatch[1].length);
+          
+          const duration = 800;
+          const startTime = performance.now();
+
+          function updateNumber(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            const currentNumber = Math.floor(targetNumber * easeOut(progress));
+            valElem.textContent = prefix + currentNumber + suffix;
+
+            if (progress < 1) {
+              requestAnimationFrame(updateNumber);
+            } else {
+              valElem.textContent = originalText;
+              valElem.classList.add('status-loaded');
+            }
+          }
+          requestAnimationFrame(updateNumber);
+        } else {
+          // No number or is weather, just wait 800ms to add emphasis
+          setTimeout(() => {
+            valElem.classList.add('status-loaded');
+          }, 800);
+        }
+      }, index * 100);
+    });
+  }
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateStatusValues();
+        obs.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  observer.observe(statusSection);
+})();
+
