@@ -71,7 +71,7 @@
         </div>
       `;
       discoveryLayer.appendChild(pt);
-      
+
       return {
         data: data,
         lastP: -1,
@@ -111,13 +111,13 @@
   function initEcologyLayer() {
     if (!ecologyLayer) return;
     const BIRD_SVG = `<svg viewBox="0 0 32 32" fill="rgba(0,0,0,0.6)" xmlns="http://www.w3.org/2000/svg"><path d="M3.2,16 C8,12 12,13 16,16 C20,13 24,12 28.8,16 C25,14 20,14.5 16,18 C12,14.5 7,14 3.2,16 Z"/></svg>`;
-    
+
     birds = birdsData.map(data => {
       const pt = document.createElement("div");
       pt.className = "bird-svg";
       pt.innerHTML = BIRD_SVG;
       ecologyLayer.appendChild(pt);
-      
+
       return {
         data: data,
         el: pt,
@@ -142,7 +142,7 @@
 
   function initNotes() {
     if (!notesLayer) return;
-    
+
     // Close other notes when one is clicked
     const closeAllNotes = (exceptIndex = -1) => {
       forestNotes.forEach((n, i) => {
@@ -164,7 +164,7 @@
       pt.className = "forest-note";
       pt.style.left = data.x + "%";
       pt.style.top = data.y + "%";
-      
+
       pt.innerHTML = `
         <button class="note-icon" aria-label="숲의 기록 열기"></button>
         <div class="note-panel panel-align-${data.align}">
@@ -173,7 +173,7 @@
           <p class="note-panel-desc">${data.desc}</p>
         </div>
       `;
-      
+
       const iconBtn = pt.querySelector('.note-icon');
       iconBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -185,9 +185,9 @@
           pt.classList.remove("is-open");
         }
       });
-      
+
       notesLayer.appendChild(pt);
-      
+
       return {
         data: data,
         el: pt,
@@ -203,7 +203,7 @@
   const minimapDrone = document.getElementById("minimapDrone");
   const minimapHitAreas = document.getElementById("minimapHitAreas");
   const droneViewStatus = document.getElementById("droneViewStatus");
-  
+
   const mapNodes = [
     { p: 0.08, x: 10, y: 20, text: "01 / BARE LAND" },
     { p: 0.29, x: 40, y: 10, text: "02 / PLANTING" },
@@ -315,12 +315,12 @@
   function updateBeats(progress) {
     beats.forEach((beat) => {
       const { start, end, kicker, lines, text, emphasis } = beat;
-      
+
       let localP = 0;
       if (progress >= start && progress <= end) {
         localP = (progress - start) / (end - start);
       }
-      
+
       if (localP === 0 && beat.lastLocalP === 0) return;
       beat.lastLocalP = localP;
 
@@ -328,13 +328,13 @@
 
       // Kicker: entrance 0.00-0.08, exit 0.92-1.00
       const pKicker = mapRange(localP, 0.00, 0.08) - mapRange(localP, 0.92, 1.00);
-      
+
       // Line 1: entrance 0.04-0.12, exit 0.88-0.96
       const pLine1 = mapRange(localP, 0.04, 0.12) - mapRange(localP, 0.88, 0.96);
-      
+
       // Line 2: entrance 0.08-0.16, exit 0.84-0.92
       const pLine2 = mapRange(localP, 0.08, 0.16) - mapRange(localP, 0.84, 0.92);
-      
+
       // Text: entrance 0.12-0.20, exit 0.80-0.88
       const pText = mapRange(localP, 0.12, 0.20) - mapRange(localP, 0.80, 0.88);
 
@@ -369,7 +369,7 @@
 
     const pct = (progress * 100).toFixed(2) + "%";
     const isMobile = window.innerWidth <= 640;
-    
+
     if (isMobile) {
       timelineFill.style.width = pct;
       timelineFill.style.height = "1px";
@@ -381,36 +381,36 @@
       timelineIndicator.style.top = pct;
       timelineIndicator.style.left = "5.5px";
     }
-    
+
     // Update Drone View & Minimap
     if (minimapDrone && droneViewStatus) {
       let currentStage = mapNodes[0];
       let nextStage = mapNodes[0];
       let localPct = 0;
-      
+
       for (let i = 0; i < mapNodes.length - 1; i++) {
-        if (progress >= mapNodes[i].p && progress <= mapNodes[i+1].p) {
+        if (progress >= mapNodes[i].p && progress <= mapNodes[i + 1].p) {
           currentStage = mapNodes[i];
-          nextStage = mapNodes[i+1];
-          localPct = (progress - mapNodes[i].p) / (mapNodes[i+1].p - mapNodes[i].p);
+          nextStage = mapNodes[i + 1];
+          localPct = (progress - mapNodes[i].p) / (mapNodes[i + 1].p - mapNodes[i].p);
           break;
         } else if (progress < mapNodes[0].p) {
           currentStage = mapNodes[0];
           nextStage = mapNodes[0];
           localPct = 0;
-        } else if (progress > mapNodes[mapNodes.length-1].p) {
-          currentStage = mapNodes[mapNodes.length-1];
-          nextStage = mapNodes[mapNodes.length-1];
+        } else if (progress > mapNodes[mapNodes.length - 1].p) {
+          currentStage = mapNodes[mapNodes.length - 1];
+          nextStage = mapNodes[mapNodes.length - 1];
           localPct = 1;
         }
       }
-      
+
       const x = currentStage.x + (nextStage.x - currentStage.x) * localPct;
       const y = currentStage.y + (nextStage.y - currentStage.y) * localPct;
       minimapDrone.style.transform = `translate(-50%, -50%)`;
       minimapDrone.style.left = x + "px";
       minimapDrone.style.top = (24 + y) + "px";
-      
+
       // Update Drone View text
       const activeNode = mapNodes.slice().reverse().find(n => progress >= n.p - 0.05) || mapNodes[0];
       if (droneViewStatus.textContent !== activeNode.text) {
@@ -421,17 +421,17 @@
         }, 150);
       }
     }
-    
+
     const MAX_YEARS = 50;
     const currentYear = Math.floor(progress * MAX_YEARS);
     if (timelineYear) {
       timelineYear.textContent = currentYear;
     }
-    
+
     const stageIndex = Math.min(4, Math.floor(progress * 5));
     stageItems.forEach((item, i) => {
       item.classList.toggle("is-active", i === stageIndex);
-      
+
       // Keep past dots filled
       const dot = item.querySelector(".stage-dot");
       if (dot) {
@@ -463,7 +463,7 @@
           p = 1;
         }
       }
-      
+
       if (p === 0 && pt.lastP === 0) return;
       pt.lastP = p;
 
@@ -476,7 +476,7 @@
 
       pt.dot.style.transform = `scale(${pDots})`;
       pt.dot.style.opacity = pDots;
-      
+
       pt.ring.style.transform = `scale(${1 + pRing * 1.5})`;
       pt.ring.style.opacity = pRingOp;
 
@@ -494,7 +494,7 @@
       if (progress > start && progress < end) {
         p = (progress - start) / (end - start);
       }
-      
+
       if (p === 0 && bird.lastP === 0) return;
       bird.lastP = p;
 
@@ -509,18 +509,18 @@
       const opacity = Math.sin(p * Math.PI); // smooth fade in and out
 
       bird.el.style.opacity = opacity;
-      bird.el.style.transform = `translate3d(${currentX}vw, calc(${currentY}vh + ${bounce}px), 0) scale(${scale}) rotate(${baseRotate + bounce*0.5}deg)`;
+      bird.el.style.transform = `translate3d(${currentX}vw, calc(${currentY}vh + ${bounce}px), 0) scale(${scale}) rotate(${baseRotate + bounce * 0.5}deg)`;
     });
 
     // Update Forest Notes Interpolation
     forestNotes.forEach(note => {
       const { start, end } = note.data;
       let isVisible = false;
-      
+
       if (progress >= start && progress <= end) {
         isVisible = true;
       }
-      
+
       if (isVisible) {
         note.el.classList.add("is-visible");
       } else {
@@ -539,7 +539,7 @@
     const droneView = document.getElementById("droneView");
     const forestTimeline = document.querySelector(".forest-timeline");
     const forestRestored = document.getElementById("forestRestored");
-    
+
     // Fade out UI between 0.94 and 0.97
     let uiOpacity = 1;
     if (progress > 0.94) {
@@ -570,17 +570,17 @@
       // Narrative fully disappears by 0.93. The credit starts rising right after.
       if (progress >= 0.93 && progress <= 1.0) {
         const fullP = (progress - 0.93) / 0.07; // 0 to 1
-        
+
         // Starts at +10vh (below screen center), goes to -100vh (off screen top)
-        const yVh = 10 - (110 * fullP); 
-        
+        const yVh = 10 - (110 * fullP);
+
         // Fade in gradually
         if (fullP < 0.2) {
           restoredOpacity = fullP / 0.2;
         } else {
           restoredOpacity = 1;
         }
-        
+
         forestRestored.style.opacity = restoredOpacity;
         forestRestored.style.transform = `translate(-50%, ${yVh}vh)`;
       } else {
@@ -643,12 +643,12 @@
      FOREST CURSOR
   --------------------------------------------------- */
   const cursorLayer = document.getElementById("cursorLayer");
-  
+
   if (cursorLayer) {
     const POOL_SIZE = 12;
     const particles = [];
     let poolIndex = 0;
-    
+
     // Create pool
     for (let i = 0; i < POOL_SIZE; i++) {
       const el = document.createElement("div");
@@ -656,54 +656,54 @@
       cursorLayer.appendChild(el);
       particles.push(el);
     }
-    
+
     let lastMouseX = 0;
     let lastMouseY = 0;
-    
+
     const triggerDistance = 20; // pixels
-    
+
     document.addEventListener("mousemove", (e) => {
       // Exclusion zones
       const excluded = e.target.closest('.narrative, .beat, .forest-note, .forest-minimap, .forest-timeline, .drone-view, header, footer');
       if (excluded) return;
-      
+
       const dx = e.clientX - lastMouseX;
       const dy = e.clientY - lastMouseY;
       const dist = Math.hypot(dx, dy);
-      
+
       if (dist > triggerDistance) {
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
-        
+
         // Spawn chance based on progress
         const p = getProgress();
         let spawnChance = 0;
         let useDot = false;
-        
+
         if (p < 0.25) spawnChance = 0.15; // increased from 0
         else if (p < 0.43) spawnChance = 0.4;
         else if (p < 0.65) spawnChance = 0.7;
         else if (p < 0.90) { spawnChance = 1.0; useDot = Math.random() > 0.6; }
         else spawnChance = 0.2;
-        
+
         if (Math.random() < spawnChance) {
           const el = particles[poolIndex];
           poolIndex = (poolIndex + 1) % POOL_SIZE;
-          
+
           el.className = useDot ? "dot-particle" : "leaf-particle";
           el.style.left = `${e.clientX}px`;
           el.style.top = `${e.clientY}px`;
-          
+
           // Randomize animation variables
           const tx = (Math.random() - 0.5) * 20; // -10 to 10
           const ty = (Math.random() * -15) - 5; // -20 to -5
           const rot = (Math.random() - 0.5) * 90; // -45 to 45
           const duration = 0.6 + Math.random() * 0.6; // 0.6 to 1.2
-          
+
           el.style.setProperty('--tx', `${tx}px`);
           el.style.setProperty('--ty', `${ty}px`);
           el.style.setProperty('--rot', `${rot}deg`);
-          
+
           // Reset animation by removing and adding
           el.style.animation = 'none';
           void el.offsetWidth; // trigger reflow
