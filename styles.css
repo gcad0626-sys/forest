@@ -1,4 +1,4 @@
-﻿/* ---------------------------------------------------
+/* ---------------------------------------------------
    Tokens
 --------------------------------------------------- */
 :root {
@@ -1976,8 +1976,9 @@ input {
   width: 35%;
   height: 250px;
   left: 28%;
-  bottom: 8%;
+  bottom: 0%;
   z-index: 4;
+  padding: 40px 140px 20px 80px;
 }
 
 /* 02 Recreation */
@@ -1988,7 +1989,7 @@ input {
   right: 5%;
   top: 7%;
   z-index: 2;
-  padding: 40px 180px 40px 150px;
+  padding: 40px 140px 40px 140px;
 }
 
 .blob-recreation h3,
@@ -2009,8 +2010,9 @@ input {
   width: 35%;
   height: 250px;
   right: 2%;
-  bottom: 10%;
+  top: calc(35% + 235px);
   z-index: 4;
+  padding: 50px 140px 40px 80px;
 }
 
 .blob-policy h3,
