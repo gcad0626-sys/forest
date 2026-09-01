@@ -41,9 +41,9 @@
      FOREST DISCOVERY DATA
   --------------------------------------------------- */
   const discoveryData = [
-    { start: 0.08, end: 0.18, x: 25, y: 55, title: '숲의 시작', desc: '비어 있던 산에 작은 묘목이<br>자리 잡기 시작합니다.' },
+    { start: 0.08, end: 0.18, x: 65, y: 35, title: '숲의 시작', desc: '비어 있던 산에 작은 묘목이<br>자리 잡기 시작합니다.' },
     { start: 0.22, end: 0.32, x: 65, y: 45, title: '어린 묘목', desc: '작은 나무들이 자라며<br>새로운 숲을 만들어갑니다.' },
-    { start: 0.40, end: 0.52, x: 52, y: 68, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
+    { start: 0.28, end: 0.38, x: 72, y: 80, title: '숲의 물길', desc: '계곡과 물길은 숲의<br>생명을 이어줍니다.' },
     { start: 0.62, end: 0.72, x: 35, y: 40, title: '성장한 나무', desc: '나무가 높아지고 수관이 넓어지며<br>숲이 연결됩니다.' },
     { start: 0.82, end: 0.94, x: 50, y: 35, title: '숲의 완성', desc: '성장한 나무들이 하나의<br>울창한 숲을 이룹니다.' }
   ];
@@ -91,13 +91,13 @@
   const ecologyLayer = document.getElementById("ecologyLayer");
   const birdsData = [
     {
-      id: 'bird-1', start: 0.53, end: 0.72,
-      startX: 10, startY: 20, endX: 90, endY: 35,
+      id: 'bird-1', start: 0.86, end: 0.95,
+      startX: 55, startY: 30, endX: 95, endY: 15,
       scale: 1.0, baseRotate: 5
     },
     {
-      id: 'bird-2', start: 0.60, end: 0.76,
-      startX: 85, startY: 45, endX: 20, endY: 15,
+      id: 'bird-2', start: 0.88, end: 0.97,
+      startX: 65, startY: 50, endX: 95, endY: 35,
       scale: 0.8, baseRotate: -10
     },
     {
@@ -953,3 +953,84 @@
   observer.observe(statusSection);
 })();
 
+
+/* ===================================================
+   TODAY FOREST SCRAMBLE ANIMATION
+=================================================== */
+(function() {
+  var statsSection = document.getElementById('forestStats');
+  if (!statsSection) return;
+
+  // Observe the parent banner section for better intersection detection
+  var observeTarget = statsSection.closest('.todays-forest') || statsSection;
+
+  var scrambleEls = Array.from(statsSection.querySelectorAll('.scramble-num'));
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasAnimated = false;
+
+  function formatWithComma(n) {
+    return Math.round(n).toLocaleString('en-US');
+  }
+
+  function scrambleAnimate(el, targetVal, hasComma, delay) {
+    var DURATION = 1100;
+    var SETTLE_DURATION = 180;
+
+    setTimeout(function() {
+      var start = performance.now();
+
+      function tick(now) {
+        var elapsed = now - start;
+        var progress = Math.min(elapsed / DURATION, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+
+        if (progress < 1) {
+          var maxVal = targetVal * 10;
+          var range = maxVal * (1 - eased) * 0.8;
+          var center = targetVal + (1 - eased) * targetVal * 4;
+          var randVal = Math.max(1, center - range / 2 + Math.random() * range);
+          el.textContent = hasComma ? formatWithComma(randVal) : String(Math.round(randVal));
+          requestAnimationFrame(tick);
+        } else {
+          var finalText = el.dataset.formatted ? el.dataset.formatted : String(targetVal);
+          el.textContent = finalText;
+          el.classList.add('settled');
+          setTimeout(function() {
+            el.classList.remove('settled');
+            el.classList.add('done');
+          }, SETTLE_DURATION);
+        }
+      }
+      requestAnimationFrame(tick);
+    }, delay);
+  }
+
+  function runScramble() {
+    if (hasAnimated) return;
+    hasAnimated = true;
+
+    if (prefersReducedMotion) {
+      scrambleEls.forEach(function(el) {
+        el.textContent = el.dataset.formatted ? el.dataset.formatted : el.dataset.value;
+      });
+      return;
+    }
+
+    scrambleEls.forEach(function(el, index) {
+      var rawVal = parseInt(el.dataset.value, 10);
+      var hasComma = el.dataset.formatted !== undefined;
+      scrambleAnimate(el, rawVal, hasComma, index * 110);
+    });
+  }
+
+  var observer = new IntersectionObserver(function(entries, obs) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        runScramble();
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  observer.observe(observeTarget);
+})();

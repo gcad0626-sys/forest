@@ -1,4 +1,4 @@
-﻿/* ---------------------------------------------------
+/* ---------------------------------------------------
    Tokens
 --------------------------------------------------- */
 :root {
@@ -1426,11 +1426,15 @@ body {
 }
 
 .status-value.highlight-green {
-  color: #2c5a3b;
+  color: #39D964;
 }
 
-.status-value.highlight-orange {
-  color: #e67e22;
+.status-value.highlight-caution {
+  color: #FA9734;
+}
+
+.status-value.highlight-yellow {
+  color: #D1D729;
 }
 
 .status-desc {
@@ -1485,8 +1489,8 @@ body {
 }
 
 .banner-title {
-  font-size: 4rem;
-  font-weight: 800;
+  font-size: 3.2rem;
+  font-weight: 700;
   margin: 0 0 20px 0;
   line-height: 1.2;
 }
@@ -1569,7 +1573,7 @@ body {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 80px;
+  gap: 50px;
 }
 
 .info-header {
@@ -1988,7 +1992,7 @@ input {
   right: 5%;
   top: 7%;
   z-index: 2;
-  padding: 0px 80px 80px 200px;
+  padding: 15px 80px 65px 200px;
 }
 
 .blob-recreation h3,
@@ -2186,3 +2190,30 @@ input {
   }
 }
 
+
+/* ===================================================
+   TODAY'S FOREST SCRAMBLE INTERACTION
+=================================================== */
+.scramble-num {
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  min-width: 1ch;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.scramble-num.settled {
+  transform: scale(1.02);
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.scramble-num.done {
+  transform: scale(1);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scramble-num {
+    transition: none !important;
+    transform: none !important;
+  }
+}
