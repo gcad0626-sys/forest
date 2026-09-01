@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>다시, 숲 — 드론으로 본 재생의 기록</title>
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-
 <body>
 
   <!-- Preloader -->
@@ -21,15 +19,26 @@
     <div class="loader-label"><span id="loaderPct">0</span>% 불러오는 중</div>
   </div>
 
-  <!-- Intro -->
-  <header class="intro">
-    <p class="intro-eyebrow">DRONE FOOTAGE · 조림지 관찰 기록</p>
-    <h1 class="intro-title">다시,<br>숲</h1>
-    <p class="intro-body">벌목 이후 십수 년, 같은 능선을 낮게 날며<br>땅이 숲으로 돌아가는 과정을 좇았습니다.</p>
-    <div class="intro-scroll">
-      <span>아래로 스크롤하며 함께 지켜봐 주세요</span>
-      <div class="intro-scroll-line">
-        <div class="intro-scroll-dot"></div>
+  <!-- GNB -->
+  <header class="gnb">
+    <div class="gnb-inner">
+      <div class="gnb-logo">
+        <img src="img/logo.png" alt="산림청" height="30">
+      </div>
+      <nav class="gnb-nav">
+        <ul>
+          <li><a href="#">산림정책</a></li>
+          <li><a href="#">분야별 산림정보</a></li>
+          <li><a href="#">행정정보</a></li>
+          <li><a href="#">국민소통</a></li>
+          <li><a href="#">정보공개</a></li>
+          <li><a href="#">산림청소개</a></li>
+        </ul>
+      </nav>
+      <div class="gnb-utils">
+        <button class="btn-search"><i class="ph ph-magnifying-glass"></i></button>
+        <button class="btn-lang">ENG</button>
+        <button class="btn-menu"><i class="ph ph-list"></i></button>
       </div>
     </div>
   </header>
@@ -169,16 +178,242 @@
     </div>
   </section>
 
-  <!-- Closing -->
-  <footer class="closing">
-    <p class="closing-eyebrow">기록을 마치며</p>
-    <h2 class="closing-title">숲은,<br>시간이 지어낸 건축물입니다</h2>
-    <p class="closing-body">사람이 심은 것은 묘목이었지만, 숲을 완성한 것은 지나간 계절들이었습니다.<br>같은 자리를 다시 낮게 날아, 그 시간을 한 번 더 기록하고 싶습니다.</p>
-    <button class="closing-replay" id="replayBtn">다시 처음부터 보기 ↑</button>
-    <p class="closing-credit">Footage · Drone flying over growing forest — 자체 촬영 기록</p>
+  <!-- FOREST STORIES -->
+  <section class="forest-stories">
+    <div class="stories-container">
+      <div class="stories-header">
+        <h2 class="section-title">FOREST<br>STORIES</h2>
+        <p class="section-subtitle">숲에 관한 이야기를 만나보세요</p>
+      </div>
+      <div class="stories-layout">
+        <div class="story-center-image">
+          <img src="https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="숲길을 걷는 사람들">
+        </div>
+        
+        <div class="story-card story-1">
+          <div class="story-meta">01</div>
+          <h3>등산 숲길</h3>
+          <p>산림 트레킹, 숲길 스케치,<br>아름다운 산림 탐방</p>
+          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+        </div>
+
+        <div class="story-card story-2">
+          <div class="story-meta">02</div>
+          <h3>산림휴양</h3>
+          <p>자연휴양림, 치유의 숲</p>
+          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+        </div>
+
+        <div class="story-card story-3">
+          <div class="story-meta">04</div>
+          <h3>산림재난</h3>
+          <p>산불, 산사태 등 산림재난<br>대응체계 현황</p>
+          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+        </div>
+
+        <div class="story-card story-4">
+          <div class="story-meta">05</div>
+          <h3>산림정책</h3>
+          <p>산림청 주요 추진 정책,<br>새로운 정책 시책</p>
+          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOREST STATUS -->
+  <section class="forest-status">
+    <div class="status-inner">
+      <div class="status-header">
+        <h2 class="section-title">FOREST STATUS</h2>
+        <p class="section-subtitle">오늘의 산림 현황</p>
+      </div>
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-label">산불위험</div>
+          <div class="status-value highlight-green">낮음</div>
+          <div class="status-desc">전국 평균</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">산사태위험</div>
+          <div class="status-value highlight-orange">주의</div>
+          <div class="status-desc">남부 일부</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">산림상태</div>
+          <div class="status-value highlight-green">양호</div>
+          <div class="status-desc">전국 평균</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">지역날씨</div>
+          <div class="status-value">24°C</div>
+          <div class="status-desc">맑음 (미세먼지 보통)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODAY'S FOREST -->
+  <section class="banner-section todays-forest">
+    <div class="banner-bg" style="background-image: url('https://images.unsplash.com/photo-1473448912268-2022ce9509d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+    <div class="banner-content">
+      <div class="banner-eyebrow">TODAY'S FOREST</div>
+      <h2 class="banner-title">오늘의 숲</h2>
+      <p class="banner-subtitle">지금, 대한민국의 숲은 어떤 모습일까요?</p>
+      
+      <div class="forest-stats">
+        <div class="stat">
+          <div class="stat-label">산림률</div>
+          <div class="stat-value">63<span class="unit">%</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">산림면적</div>
+          <div class="stat-value">630<span class="unit">만 ha</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">탄소흡수량</div>
+          <div class="stat-value">4,300<span class="unit">만 t</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOREST & PEOPLE -->
+  <section class="banner-section forest-people">
+    <div class="banner-bg" style="background-image: url('https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+    <div class="banner-content">
+      <div class="banner-eyebrow">FOREST & PEOPLE</div>
+      <h2 class="banner-title">숲과 사람</h2>
+      <p class="banner-subtitle">숲은 우리에게 휴식처를 제공하고,<br>건강과 문화, 그리고 생명력을 불어넣습니다.</p>
+      
+      <div class="people-keywords">
+        <span>건강</span>
+        <span>휴양</span>
+        <span>문화</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOREST FUTURE -->
+  <section class="banner-section forest-future">
+    <div class="banner-bg" style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+    <div class="banner-content">
+      <div class="banner-eyebrow">FOREST FUTURE</div>
+      <h2 class="banner-title">오늘 우리가 만드는 숲은<br>다음 세대의 숲이 됩니다</h2>
+      
+      <div class="future-keywords">
+        <span>CLIMATE</span>
+        <span>CARBON</span>
+        <span>BIODIVERSITY</span>
+        <span>RESTORATION</span>
+      </div>
+      
+      <a href="#" class="btn-more-policy">산림정책 자세히 보기 &rarr;</a>
+    </div>
+  </section>
+
+  <!-- Info Section (Board, News, Quick Links) -->
+  <section class="info-section">
+    <div class="info-inner">
+      <div class="info-col">
+        <div class="info-header">
+          <h3>공지사항</h3>
+          <a href="#" class="btn-plus"><i class="ph ph-plus"></i></a>
+        </div>
+        <ul class="notice-list">
+          <li>
+            <a href="#">산림청 산림보호법 일부개정법률안 입법예고</a>
+            <span class="date">2026.09.01</span>
+          </li>
+          <li>
+            <a href="#">2026년 하반기 산림분야 규제혁신 안내</a>
+            <span class="date">2026.08.28</span>
+          </li>
+          <li>
+            <a href="#">국립자연휴양림 이용 안내 공지사항</a>
+            <span class="date">2026.08.25</span>
+          </li>
+          <li>
+            <a href="#">산림청 본청 조직개편 안내</a>
+            <span class="date">2026.08.20</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-col">
+        <div class="info-header">
+          <h3>주요 소식</h3>
+          <a href="#" class="btn-plus"><i class="ph ph-plus"></i></a>
+        </div>
+        <ul class="news-list">
+          <li>
+            <div class="news-thumb" style="background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="news-text">
+              <a href="#">올해의 산림보호 캠페인 성과 보고</a>
+              <p>2026년 산림보호 캠페인이 국민 여러분의 적극적인 참여로 성공적으로 마무리 되었습니다.</p>
+            </div>
+          </li>
+          <li>
+            <div class="news-thumb" style="background-image: url('https://images.unsplash.com/photo-1518182170546-076616fdfa30?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="news-text">
+              <a href="#">가을철 산불조심 기간 운영 안내</a>
+              <p>산불 발생 위험이 높아지는 가을철을 맞이하여, 전국적인 산불조심 기간을 운영합니다.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-col">
+        <div class="info-header">
+          <h3>바로가기</h3>
+        </div>
+        <div class="quick-links">
+          <a href="#" class="quick-link">
+            <div class="ql-icon"><i class="ph ph-newspaper"></i></div>
+            <span>블로그</span>
+          </a>
+          <a href="#" class="quick-link">
+            <div class="ql-icon"><i class="ph ph-chart-bar"></i></div>
+            <span>통계정보</span>
+          </a>
+          <a href="#" class="quick-link">
+            <div class="ql-icon"><i class="ph ph-users"></i></div>
+            <span>국민참여</span>
+          </a>
+          <a href="#" class="quick-link">
+            <div class="ql-icon"><i class="ph ph-link"></i></div>
+            <span>관련사이트</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="img/logo.png" alt="산림청" height="30">
+      </div>
+      <div class="footer-info">
+        <p>우)35208 대전광역시 서구 청사로 189 정부대전청사 1동</p>
+        <p>대표전화 1588-3249 / (야간) 042-481-4151, (팩스) 042-472-3222</p>
+      </div>
+      <div class="footer-utils">
+        <select class="family-site">
+          <option>관련사이트</option>
+        </select>
+        <div class="footer-sns">
+          <a href="#"><i class="ph ph-youtube-logo"></i></a>
+          <a href="#"><i class="ph ph-instagram-logo"></i></a>
+          <a href="#"><i class="ph ph-facebook-logo"></i></a>
+        </div>
+        <button class="btn-top" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i class="ph ph-caret-up"></i></button>
+      </div>
+    </div>
   </footer>
 
+  <button id="replayBtn" style="display:none;"></button>
   <script src="script.js"></script>
 </body>
-
 </html>
