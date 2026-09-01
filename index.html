@@ -179,44 +179,66 @@
   </section>
 
   <!-- FOREST STORIES -->
-  <section class="forest-stories">
-    <div class="stories-container">
-      <div class="stories-header">
+  <section class="forest-stories organic">
+    <!-- Contour Background SVG -->
+    <svg class="contour-bg" viewBox="0 0 1920 1080" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M -100,100 C 300,400 800,50 1400,300 C 1800,450 2000,200 2000,200" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1.5"/>
+      <path d="M -100,150 C 320,430 820,80 1430,340 C 1820,480 2000,250 2000,250" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+      <path d="M -100,200 C 340,460 840,110 1460,380 C 1840,510 2000,300 2000,300" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+      <path d="M -100,250 C 360,490 860,140 1490,420 C 1860,540 2000,350 2000,350" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1.5"/>
+      <path d="M -100,300 C 380,520 880,170 1520,460 C 1880,570 2000,400 2000,400" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+      
+      <path d="M -100,500 C 400,800 900,400 1300,700 C 1700,1000 2000,600 2000,600" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1.5"/>
+      <path d="M -100,550 C 420,830 920,430 1320,740 C 1720,1030 2000,650 2000,650" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+      <path d="M -100,600 C 440,860 940,460 1340,780 C 1740,1060 2000,700 2000,700" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+      <path d="M -100,650 C 460,890 960,490 1360,820 C 1760,1090 2000,750 2000,750" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1.5"/>
+      
+      <path d="M -100,850 C 500,1100 1100,600 1600,900 C 1900,1050 2000,900 2000,900" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1.5"/>
+      <path d="M -100,900 C 520,1130 1120,630 1620,940 C 1920,1080 2000,950 2000,950" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+      <path d="M -100,950 C 540,1160 1140,660 1640,980 C 1940,1110 2000,1000 2000,1000" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+    </svg>
+
+    <div class="organic-container">
+      <div class="stories-title-area">
         <h2 class="section-title">FOREST<br>STORIES</h2>
         <p class="section-subtitle">숲에 관한 이야기를 만나보세요</p>
       </div>
-      <div class="stories-layout">
-        <div class="story-center-image">
-          <img src="https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="숲길을 걷는 사람들">
-        </div>
-        
-        <div class="story-card story-1">
-          <div class="story-meta">01</div>
-          <h3>등산 숲길</h3>
-          <p>산림 트레킹, 숲길 스케치,<br>아름다운 산림 탐방</p>
-          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
-        </div>
 
-        <div class="story-card story-2">
-          <div class="story-meta">02</div>
-          <h3>산림휴양</h3>
-          <p>자연휴양림, 치유의 숲</p>
-          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
-        </div>
+      <!-- 03 산림재난 (behind center) -->
+      <div class="blob blob-disaster">
+        <div class="story-meta">03</div>
+        <h3>산림재난</h3>
+        <p>산불·산사태 등 재난 상황과<br>대비 행동 요령</p>
+        <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+      </div>
 
-        <div class="story-card story-3">
-          <div class="story-meta">04</div>
-          <h3>산림재난</h3>
-          <p>산불, 산사태 등 산림재난<br>대응체계 현황</p>
-          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
-        </div>
+      <!-- Center Image -->
+      <div class="blob blob-center-img">
+        <img src="img/0.png" alt="숲길을 걷는 사람들">
+      </div>
 
-        <div class="story-card story-4">
-          <div class="story-meta">05</div>
-          <h3>산림정책</h3>
-          <p>산림청 주요 추진 정책,<br>새로운 정책 시책</p>
-          <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
-        </div>
+      <!-- 01 등산 숲길 -->
+      <div class="blob blob-hiking">
+        <div class="story-meta">01</div>
+        <h3>등산 숲길</h3>
+        <p>산림 통계, 연구, 교육 등<br>다양한 산림 정보</p>
+        <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+      </div>
+
+      <!-- 02 산림휴양 -->
+      <div class="blob blob-recreation">
+        <div class="story-meta">02</div>
+        <h3>산림휴양</h3>
+        <p>휴식이 필요한 순간</p>
+        <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
+      </div>
+
+      <!-- 05 산림정책 -->
+      <div class="blob blob-policy">
+        <div class="story-meta">05</div>
+        <h3>산림정책</h3>
+        <p>산림의 주요 정책과<br>제도, 지원 사업</p>
+        <a href="#" class="btn-arrow">자세히 보기 &rarr;</a>
       </div>
     </div>
   </section>

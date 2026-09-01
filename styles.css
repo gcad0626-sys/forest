@@ -1,4 +1,4 @@
-/* ---------------------------------------------------
+﻿/* ---------------------------------------------------
    Tokens
 --------------------------------------------------- */
 :root {
@@ -1145,6 +1145,7 @@ body {
     transition: none;
   }
 }
+
 /* ---------------------------------------------------
    Global Modifications for New Layout
 --------------------------------------------------- */
@@ -1234,6 +1235,7 @@ body {
   margin: 0 0 10px 0;
   letter-spacing: -0.02em;
 }
+
 .section-subtitle {
   font-size: 1.1rem;
   color: #666;
@@ -1258,6 +1260,7 @@ body {
 .stories-header {
   text-align: left;
 }
+
 .stories-header .section-title {
   color: #2c5a3b;
 }
@@ -1309,7 +1312,7 @@ body {
 .story-2 {
   grid-column: 4;
   grid-row: 1;
-  background: #c3e2c3; 
+  background: #c3e2c3;
   border-radius: 10px 80px 10px 40px;
 }
 
@@ -1328,7 +1331,10 @@ body {
   color: white;
 }
 
-.story-4 p, .story-4 h3, .story-4 .story-meta, .story-4 .btn-arrow {
+.story-4 p,
+.story-4 h3,
+.story-4 .story-meta,
+.story-4 .btn-arrow {
   color: white;
 }
 
@@ -1363,13 +1369,13 @@ body {
 
 /* FOREST STATUS */
 .forest-status {
-  padding: 80px 40px;
+  padding: 80px 5%;
   background: #fff;
 }
 
 .status-inner {
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1385,7 +1391,7 @@ body {
   flex-grow: 1;
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   padding: 40px;
   justify-content: space-around;
   border: 1px solid #eee;
@@ -1420,8 +1426,13 @@ body {
   margin-bottom: 10px;
 }
 
-.status-value.highlight-green { color: #2c5a3b; }
-.status-value.highlight-orange { color: #e67e22; }
+.status-value.highlight-green {
+  color: #2c5a3b;
+}
+
+.status-value.highlight-orange {
+  color: #e67e22;
+}
 
 .status-desc {
   font-size: 0.85rem;
@@ -1447,7 +1458,8 @@ body {
   inset: 0;
   background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* Parallax effect */
+  background-attachment: fixed;
+  /* Parallax effect */
   z-index: 1;
 }
 
@@ -1455,7 +1467,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .banner-content {
@@ -1470,7 +1482,7 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-bottom: 20px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .banner-title {
@@ -1513,18 +1525,20 @@ body {
 }
 
 /* Keywords inside banner */
-.people-keywords, .future-keywords {
+.people-keywords,
+.future-keywords {
   display: flex;
   justify-content: center;
   gap: 20px;
 }
 
-.people-keywords span, .future-keywords span {
+.people-keywords span,
+.future-keywords span {
   padding: 12px 35px;
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 30px;
   font-size: 1.1rem;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
 }
 
@@ -1689,7 +1703,7 @@ body {
   background: #fff;
   border-color: #2c5a3b;
   transform: translateY(-3px);
-  box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 }
 
 .ql-icon {
@@ -1796,14 +1810,266 @@ body {
 /* ---------------------------------------------------
    Final Font and Logo Adjustments
 --------------------------------------------------- */
-body, h1, h2, h3, h4, h5, h6, p, span, a, div, li, button, input {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+div,
+li,
+button,
+input {
   font-family: 'Pretendard', sans-serif !important;
 }
 
-[class^="ph-"], [class*=" ph-"] {
+[class^="ph-"],
+[class*=" ph-"] {
   font-family: "Phosphor" !important;
 }
 
 .gnb-logo {
   margin-left: 0;
+}
+
+/* ---------------------------------------------------
+   FOREST STORIES: ORGANIC COMPOSITION REDESIGN
+--------------------------------------------------- */
+.forest-stories.organic {
+  background: #fff;
+  position: relative;
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  padding: 0;
+  min-height: 850px;
+}
+
+.contour-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.organic-container {
+  position: relative;
+  width: 100%;
+  max-width: 1700px;
+  height: 800px;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.stories-title-area {
+  position: absolute;
+  top: 15%;
+  left: 5%;
+  z-index: 5;
+}
+
+.stories-title-area .section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  color: #0A6935;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+
+.stories-title-area .section-subtitle {
+  font-size: 1.1rem;
+  color: #444;
+  border-top: 1px solid #ccc;
+  padding-top: 15px;
+}
+
+/* Base Blob Styles */
+.blob {
+  position: absolute;
+  padding: 40px 140px 40px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.blob:hover {
+  transform: translateY(-5px);
+}
+
+.blob h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.blob p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #444;
+  margin-bottom: 0;
+}
+
+.blob .story-meta {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.blob .btn-arrow {
+  color: #555;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 03 Disaster (Behind) */
+.blob-disaster {
+  background: transparent url('img/3.png') center/100% 100% no-repeat;
+  width: 32%;
+  height: 230px;
+  right: 5%;
+  top: 35%;
+  z-index: 2;
+}
+
+/* Center Image */
+.blob-center-img {
+  width: 38%;
+  height: 550px;
+  left: 26%;
+  top: 10%;
+  z-index: 3;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+}
+
+.blob-center-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.blob-center-img:hover img {
+  transform: scale(1.05);
+}
+
+/* 01 Hiking */
+.blob-hiking {
+  background: transparent url('img/1.png') center/100% 100% no-repeat;
+  width: 35%;
+  height: 250px;
+  left: 28%;
+  bottom: 8%;
+  z-index: 4;
+}
+
+/* 02 Recreation */
+.blob-recreation {
+  background: transparent url('img/2.png') center/100% 100% no-repeat;
+  width: 40%;
+  height: 230px;
+  right: 5%;
+  top: 7%;
+  z-index: 2;
+  padding: 40px 180px 40px 150px;
+}
+
+.blob-recreation h3,
+.blob-recreation p,
+.blob-recreation .story-meta,
+.blob-recreation .btn-arrow {
+  color: #fff;
+}
+
+.blob-recreation p,
+.blob-recreation .btn-arrow {
+  opacity: 0.9;
+}
+
+/* 05 Policy */
+.blob-policy {
+  background: transparent url('img/5.png') center/100% 100% no-repeat;
+  width: 35%;
+  height: 250px;
+  right: 2%;
+  bottom: 10%;
+  z-index: 4;
+}
+
+.blob-policy h3,
+.blob-policy p,
+.blob-policy .story-meta,
+.blob-policy .btn-arrow {
+  color: #fff;
+}
+
+.blob-policy p,
+.blob-policy .btn-arrow {
+  opacity: 0.9;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1200px) {
+  .blob h3 {
+    font-size: 1.3rem;
+  }
+
+  .blob p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .forest-stories.organic {
+    min-height: auto;
+    padding: 60px 20px;
+  }
+
+  .organic-container {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .stories-title-area {
+    position: relative;
+    top: auto;
+    left: auto;
+  }
+
+  .blob {
+    position: relative;
+    width: 100%;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    height: auto;
+  }
+
+  .blob-center-img {
+    height: 400px;
+  }
+
+  .contour-bg {
+    opacity: 0.3;
+  }
 }
