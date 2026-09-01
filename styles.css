@@ -1498,7 +1498,7 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-bottom: 20px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #74D482;
 }
 
 .banner-title {
@@ -1511,6 +1511,7 @@ body {
 /* FOREST FUTURE 전용 타이틀 */
 .future-title {
   font-weight: 600;
+  margin-top: -20px;
 }
 
 .future-title-small {
@@ -1566,10 +1567,18 @@ body {
   gap: 20px;
 }
 
-.people-keywords span,
-.future-keywords span {
+.people-keywords span {
   padding: 12px 35px;
   border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 30px;
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.future-keywords span {
+  padding: 12px 35px;
+  border: none;
   border-radius: 30px;
   font-size: 1.1rem;
   background: rgba(255, 255, 255, 0.1);
@@ -2013,7 +2022,7 @@ input {
   left: 28%;
   bottom: 0%;
   z-index: 4;
-  padding: 40px 140px 20px 80px;
+  padding: 25px 140px 35px 110px;
 }
 
 /* 02 Recreation */
@@ -2042,9 +2051,9 @@ input {
 /* 04 Policy */
 .blob-policy {
   background: transparent url('img/5.png') center/100% 100% no-repeat;
-  width: 35%;
-  height: 250px;
-  right: 2%;
+  width: 32%;
+  height: 230px;
+  right: 5%;
   top: calc(35% + 235px);
   z-index: 4;
   padding: 50px 140px 40px 100px;
